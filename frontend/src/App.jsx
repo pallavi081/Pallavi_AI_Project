@@ -7,6 +7,11 @@ export default function App() {
   const [chat, setChat] = useState([]);
   const [dark, setDark] = useState(true);
 
+  // ✅ Load voices (IMPORTANT for mobile)
+  window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+  };
+
   const sendMessage = async () => {
     if (!message.trim()) return;
 
@@ -22,7 +27,25 @@ export default function App() {
     );
 
     const data = await res.json();
-    setChat((prev) => [...prev, { from: "ai", text: data.reply }]);
+    const aiReply = data.reply;
+
+    setChat((prev) => [...prev, { from: "ai", text: aiReply }]);
+
+    // 🔊 FEMALE AI VOICE (ADDED ONLY)
+    const speech = new SpeechSynthesisUtterance(aiReply);
+    speech.lang = "en-US";
+    speech.rate = 1;
+    speech.pitch = 1.1;
+
+    const voices = window.speechSynthesis.getVoices();
+    speech.voice =
+      voices.find((v) =>
+        v.name.toLowerCase().includes("female")
+      ) || voices[0];
+
+    window.speechSynthesis.speak(speech);
+    // 🔊 END VOICE
+
     setMessage("");
   };
 
