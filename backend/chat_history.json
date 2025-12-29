@@ -1,0 +1,46 @@
+[
+  {
+    "user": "Hello.",
+    "ai": "Hello Pallavi \ud83d\udc4b"
+  },
+  {
+    "user": "hello",
+    "ai": "Hello Pallavi \ud83d\udc4b"
+  },
+  {
+    "user": "time",
+    "ai": "Time is 15:23"
+  },
+  {
+    "user": "how are you",
+    "ai": "You said: how are you"
+  },
+  {
+    "user": "hello",
+    "ai": "Hello Pallavi \ud83d\udc4b"
+  },
+  {
+    "user": "time",
+    "ai": "Time is 17:03"
+  },
+  {
+    "user": "hello",
+    "ai": "Hello Pallavi \ud83d\udc4b"
+  },
+  {
+    "user": "time",
+    "ai": "Time is 17:04"
+  },
+  {
+    "user": "byy",
+    "ai": "You said: byy"
+  },
+  {
+    "user": "help",
+    "ai": "You said: help"
+  },
+  {
+    "user": "bye",
+    "ai": "Bye \ud83d\udc4b"
+  }
+]
