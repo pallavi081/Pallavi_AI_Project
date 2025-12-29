@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import aiAvatar from "./assets/ai-avatar.png";
 import "./App.css";
 
@@ -6,11 +6,18 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);
   const [dark, setDark] = useState(true);
+  const [voices, setVoices] = useState([]);
 
-  // ✅ Load voices (IMPORTANT for mobile)
-  window.speechSynthesis.onvoiceschanged = () => {
-    window.speechSynthesis.getVoices();
-  };
+  // ✅ Load voices properly (VERY IMPORTANT)
+  useEffect(() => {
+    const loadVoices = () => {
+      const v = window.speechSynthesis.getVoices();
+      setVoices(v);
+    };
+
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }, []);
 
   const sendMessage = async () => {
     if (!message.trim()) return;
@@ -31,20 +38,27 @@ export default function App() {
 
     setChat((prev) => [...prev, { from: "ai", text: aiReply }]);
 
-    // 🔊 FEMALE AI VOICE (ADDED ONLY)
+    // 🔊 FEMALE AI VOICE (STRICTLY FEMALE)
     const speech = new SpeechSynthesisUtterance(aiReply);
     speech.lang = "en-US";
     speech.rate = 1;
-    speech.pitch = 1.1;
+    speech.pitch = 1.3; // more feminine tone
 
-    const voices = window.speechSynthesis.getVoices();
-    speech.voice =
-      voices.find((v) =>
-        v.name.toLowerCase().includes("female")
-      ) || voices[0];
+    // ✅ FORCE REAL FEMALE VOICES
+    const femaleVoice =
+      voices.find(v => v.name.includes("Google US English Female")) ||
+      voices.find(v => v.name.includes("Microsoft Zira")) ||
+      voices.find(v => v.name.includes("Samantha")) ||
+      voices.find(v => v.gender === "female") ||
+      voices[0];
 
+    if (femaleVoice) {
+      speech.voice = femaleVoice;
+    }
+
+    window.speechSynthesis.cancel(); // stop previous speech
     window.speechSynthesis.speak(speech);
-    // 🔊 END VOICE
+    // 🔊 END FEMALE VOICE
 
     setMessage("");
   };
