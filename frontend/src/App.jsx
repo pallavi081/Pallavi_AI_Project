@@ -1,85 +1,66 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import aiAvatar from "./assets/ai-avatar.png";
+import "./App.css";
 
-function App() {
+export default function App() {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [femaleVoice, setFemaleVoice] = useState(null);
-
-  // Load voices
-  useEffect(() => {
-    const loadVoices = () => {
-      const voices = window.speechSynthesis.getVoices();
-      const female = voices.find(v =>
-        v.name.toLowerCase().includes("female") ||
-        v.name.toLowerCase().includes("zira") ||
-        v.name.toLowerCase().includes("samantha")
-      );
-      setFemaleVoice(female || voices[0]);
-    };
-
-    loadVoices();
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-  }, []);
-
-  const speak = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    if (femaleVoice) utterance.voice = femaleVoice;
-    utterance.rate = 1;
-    utterance.pitch = 1.2;
-    window.speechSynthesis.speak(utterance);
-  };
+  const [chat, setChat] = useState([]);
+  const [dark, setDark] = useState(true);
 
   const sendMessage = async () => {
     if (!message.trim()) return;
 
-    const userMsg = { sender: "You", text: message };
-    setMessages(prev => [...prev, userMsg]);
+    setChat((prev) => [...prev, { from: "user", text: message }]);
 
-    const res = await fetch("https://pallavi-ai-backend.onrender.com/chat",
-       {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
-    });
+    const res = await fetch(
+      "https://pallavi-ai-backend.onrender.com/chat",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      }
+    );
 
     const data = await res.json();
-    const aiMsg = { sender: "Pallavi AI", text: data.reply };
-
-    setMessages(prev => [...prev, aiMsg]);
-    speak(data.reply);
+    setChat((prev) => [...prev, { from: "ai", text: data.reply }]);
     setMessage("");
   };
 
   return (
-    <div style={{ padding: "30px", fontFamily: "Arial" }}>
-      <h1>🤖 Pallavi AI Assistant</h1>
+    <div className={dark ? "app dark" : "app"}>
+      {/* HEADER */}
+      <div className="header">
+        <div className="profile">
+          <img src={aiAvatar} alt="AI" />
+          <div>
+            <h3>Pallavi AI</h3>
+            <span>online</span>
+          </div>
+        </div>
+        <button className="mode-btn" onClick={() => setDark(!dark)}>
+          {dark ? "☀" : "🌙"}
+        </button>
+      </div>
 
-      <div style={{
-        border: "1px solid #ccc",
-        padding: "15px",
-        height: "300px",
-        overflowY: "auto",
-        marginBottom: "15px"
-      }}>
-        {messages.map((msg, i) => (
-          <p key={i}>
-            <strong>{msg.sender}:</strong> {msg.text}
-          </p>
+      {/* CHAT */}
+      <div className="chat">
+        {chat.map((c, i) => (
+          <div key={i} className={`bubble ${c.from}`}>
+            {c.text}
+          </div>
         ))}
       </div>
 
-      <input
-        value={message}
-        onChange={e => setMessage(e.target.value)}
-        placeholder="Type your message..."
-        style={{ padding: "10px", width: "70%" }}
-      />
-
-      <button onClick={sendMessage} style={{ padding: "10px 20px", marginLeft: "10px" }}>
-        Send
-      </button>
+      {/* INPUT */}
+      <div className="input-area">
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type a message"
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+        />
+        <button onClick={sendMessage}>➤</button>
+      </div>
     </div>
   );
 }
-
-export default App;
