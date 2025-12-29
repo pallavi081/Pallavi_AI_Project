@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import aiAvatar from "./assets/ai-avatar.png";
 import "./App.css";
+
+
+
+
 
 export default function App() {
   const [message, setMessage] = useState("");
@@ -67,17 +70,21 @@ export default function App() {
     <div className={dark ? "app dark" : "app"}>
       {/* HEADER */}
       <div className="header">
-        <div className="profile">
-          <img src={aiAvatar} alt="AI" />
-          <div>
-            <h3>Pallavi AI</h3>
-            <span>online</span>
-          </div>
-        </div>
-        <button className="mode-btn" onClick={() => setDark(!dark)}>
-          {dark ? "☀" : "🌙"}
-        </button>
-      </div>
+  <div className="profile">
+    <img src="/ai-avatar.png" alt="AI Avatar" className="avatar" />
+
+
+    <div>
+      <h3>Pallavi AI</h3>
+      <span>online</span>
+    </div>
+  </div>
+
+  <button className="mode-btn" onClick={() => setDark(!dark)}>
+    {dark ? "☀" : "🌙"}
+  </button>
+</div>
+
 
       {/* CHAT */}
       <div className="chat">
